@@ -1,89 +1,90 @@
 package org.poo;
 
-import java.time.LocalDate;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.stream.Collectors;
 
 public class Agenda {
     private Medico medico;
-    private Map<LocalDate, Boolean> horarios;
+    private Map<LocalDateTime, Boolean> horarios;
 
     public Agenda() {
         this.horarios = new HashMap<>();
     }
 
     public Agenda(Medico medico) {
-        setMedico(medico);
-        this.horarios = new HashMap<>();
+        this();
+        this.medico = medico;
     }
 
-    public boolean verificarDisponibilidade(LocalDate data) {
+    public boolean verificarDisponibilidade(LocalDateTime data) {
         if (data == null) {
-            throw new IllegalArgumentException("Data não pode ser nula");
+            return false;
         }
-        
-        if (data.isBefore(LocalDate.now())) {
-            return false; // Datas passadas não estão disponíveis
+
+        if (data.isBefore(LocalDateTime.now())) {
+            return false;
         }
-        
-        // Se não existe entrada para a data, considera como disponível
-        return !horarios.getOrDefault(data, false);
+
+        // Se não há informação sobre o horário, considera disponível
+        return !horarios.containsKey(data) || horarios.get(data);
     }
 
-    public boolean reservarHorario(LocalDate data, Paciente paciente) {
-        if (data == null) {
-            throw new IllegalArgumentException("Data não pode ser nula");
+    public boolean reservarHorario(LocalDateTime data, Paciente paciente) {
+        if (data == null || paciente == null) {
+            return false;
         }
-        
-        if (paciente == null) {
-            throw new IllegalArgumentException("Paciente não pode ser nulo");
-        }
-        
+
         if (!verificarDisponibilidade(data)) {
-            return false; // Horário não disponível
+            return false;
         }
-        
+
         // Marca o horário como ocupado
-        horarios.put(data, true);
+        horarios.put(data, false);
         return true;
     }
 
-    public void liberarHorario(LocalDate data) {
-        if (data == null) {
-            throw new IllegalArgumentException("Data não pode ser nula");
+    public void liberarHorario(LocalDateTime data) {
+        if (data != null) {
+            horarios.put(data, true);
         }
-        
-        // Remove o horário da agenda ou marca como disponível
-        horarios.put(data, false);
     }
 
-    public List<LocalDate> obterHorariosDisponiveis(LocalDate dataInicio, LocalDate dataFim) {
+    public List<LocalDateTime> obterHorariosDisponiveis(LocalDateTime dataInicio, LocalDateTime dataFim) {
+        List<LocalDateTime> horariosDisponiveis = new ArrayList<>();
+
         if (dataInicio == null || dataFim == null) {
-            throw new IllegalArgumentException("Datas não podem ser nulas");
+            return horariosDisponiveis;
         }
-        
-        if (dataInicio.isAfter(dataFim)) {
-            throw new IllegalArgumentException("Data inicial deve ser anterior à data final");
-        }
-        
-        List<LocalDate> horariosDisponiveis = new ArrayList<>();
-        LocalDate dataAtual = dataInicio;
-        
+
+        LocalDateTime dataAtual = dataInicio;
         while (!dataAtual.isAfter(dataFim)) {
             if (verificarDisponibilidade(dataAtual)) {
                 horariosDisponiveis.add(dataAtual);
             }
             dataAtual = dataAtual.plusDays(1);
         }
-        
+
         return horariosDisponiveis;
     }
 
-    public List<LocalDate> obterHorariosOcupados() {
-        return horarios.entrySet().stream()
-                .filter(Map.Entry::getValue)
-                .map(Map.Entry::getKey)
-                .sorted()
-                .toList();
+    public List<String> obterProcedimentos() {
+        List<String> procedimentos = new ArrayList<>();
+
+        if (medico != null && medico.getEspecialidades() != null) {
+            for (EspecialidadeMedica especialidade : medico.getEspecialidades()) {
+                procedimentos.addAll(especialidade.obterProcedimentos());
+            }
+        }
+
+        if (procedimentos.isEmpty()) {
+            procedimentos.add("Consulta Médica Geral");
+        }
+
+        return procedimentos;
     }
 
     public Medico getMedico() {
@@ -91,27 +92,22 @@ public class Agenda {
     }
 
     public void setMedico(Medico medico) {
-        if (medico == null) {
-            throw new IllegalArgumentException("Médico não pode ser nulo");
-        }
-        
         this.medico = medico;
     }
 
-    public Map<LocalDate, Boolean> getHorarios() {
-        return new HashMap<>(horarios); // Retorna cópia para proteger encapsulamento
+    public Map<LocalDateTime, Boolean> getHorarios() {
+        return new HashMap<>(horarios);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Agenda agenda = (Agenda) o;
-        return Objects.equals(medico, agenda.medico);
+    public String toString() {
+        return "Agenda{" +
+                "medico=" + (medico != null ? medico.getNome() : "N/A") +
+                ", horariosOcupados=" + horarios.entrySet().stream()
+                        .filter(entry -> !entry.getValue())
+                        .map(entry -> entry.getKey().toString())
+                        .collect(Collectors.joining(", "))
+                +
+                '}';
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(medico);
-    }
-} 
+}
