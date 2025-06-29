@@ -1,4 +1,4 @@
-package org.poo;
+package org.poo.entidades;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

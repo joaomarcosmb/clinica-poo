@@ -1,4 +1,4 @@
-package org.poo;
+package org.poo.entidades;
 
 import java.util.UUID;
 
@@ -22,7 +22,10 @@ public class Permissao {
     }
 
     public void setDescricao(String descricao) {
-        this.descricao = descricao;
+        if (descricao == null || descricao.trim().isEmpty()) {
+            throw new IllegalArgumentException("Descrição da permissão não pode ser nula ou vazia");
+        }
+        this.descricao = descricao.trim();
     }
 
     public boolean isAtiva() {

@@ -1,4 +1,7 @@
-package org.poo;
+package org.poo.entidades;
+
+import org.poo.excecoes.ConsultaInvalidaException;
+import org.poo.interfaces.ItemHistorico;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,13 +20,13 @@ public class Consulta implements ItemHistorico {
     }
 
     public Consulta(LocalDateTime dataHora, String diagnostico, String tratamento, boolean realizada, Medico medico,
-            Paciente paciente) {
-        this.dataHora = dataHora;
-        this.diagnostico = diagnostico;
-        this.tratamento = tratamento;
-        this.realizada = realizada;
-        this.medico = medico;
-        this.paciente = paciente;
+            Paciente paciente) throws ConsultaInvalidaException {
+        setDataHora(dataHora);
+        setDiagnostico(diagnostico);
+        setTratamento(tratamento);
+        setRealizada(realizada);
+        setMedico(medico);
+        setPaciente(paciente);
     }
 
     public boolean alterarData(LocalDateTime novaData) {
@@ -69,7 +72,10 @@ public class Consulta implements ItemHistorico {
         return dataHora;
     }
 
-    public void setDataHora(LocalDateTime dataHora) {
+    public void setDataHora(LocalDateTime dataHora) throws ConsultaInvalidaException {
+        if (dataHora != null && dataHora.isBefore(LocalDateTime.now())) {
+            throw new ConsultaInvalidaException("Data da consulta não pode ser no passado");
+        }
         this.dataHora = dataHora;
     }
 
@@ -101,7 +107,10 @@ public class Consulta implements ItemHistorico {
         return medico;
     }
 
-    public void setMedico(Medico medico) {
+    public void setMedico(Medico medico) throws ConsultaInvalidaException {
+        if (medico == null) {
+            throw new ConsultaInvalidaException("Médico não pode ser nulo");
+        }
         this.medico = medico;
     }
 
@@ -109,7 +118,10 @@ public class Consulta implements ItemHistorico {
         return paciente;
     }
 
-    public void setPaciente(Paciente paciente) {
+    public void setPaciente(Paciente paciente) throws ConsultaInvalidaException {
+        if (paciente == null) {
+            throw new ConsultaInvalidaException("Paciente não pode ser nulo");
+        }
         this.paciente = paciente;
     }
 
@@ -117,7 +129,10 @@ public class Consulta implements ItemHistorico {
         return prontuario;
     }
 
-    public void setProntuario(Prontuario prontuario) {
+    public void setProntuario(Prontuario prontuario) throws ConsultaInvalidaException {
+        if (prontuario != null && !prontuario.getPaciente().equals(this.paciente)) {
+            throw new ConsultaInvalidaException("Prontuário deve pertencer ao mesmo paciente da consulta");
+        }
         this.prontuario = prontuario;
     }
 

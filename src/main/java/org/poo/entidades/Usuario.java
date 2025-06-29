@@ -1,4 +1,4 @@
-package org.poo;
+package org.poo.entidades;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -45,7 +45,13 @@ public class Usuario extends Pessoa {
     }
 
     public void setLogin(String login) {
-        this.login = login;
+        if (login == null || login.trim().isEmpty()) {
+            throw new IllegalArgumentException("Login não pode ser nulo ou vazio");
+        }
+        if (login.trim().length() < 3) {
+            throw new IllegalArgumentException("Login deve ter pelo menos 3 caracteres");
+        }
+        this.login = login.trim();
     }
 
     public String getSenha() {
@@ -53,6 +59,12 @@ public class Usuario extends Pessoa {
     }
 
     public void setSenha(String senha) {
+        if (senha == null || senha.trim().isEmpty()) {
+            throw new IllegalArgumentException("Senha não pode ser nula ou vazia");
+        }
+        if (senha.length() < 6) {
+            throw new IllegalArgumentException("Senha deve ter pelo menos 6 caracteres");
+        }
         this.senha = senha;
     }
 

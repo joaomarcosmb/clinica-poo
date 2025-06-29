@@ -1,4 +1,6 @@
-package org.poo;
+package org.poo.entidades;
+
+import org.poo.interfaces.ItemHistorico;
 
 import java.time.LocalDate;
 import java.util.Objects;

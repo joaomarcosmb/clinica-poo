@@ -1,4 +1,4 @@
-package org.poo;
+package org.poo.entidades;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -46,7 +46,10 @@ public class TipoExame {
     }
 
     public void setNome(String nome) {
-        this.nome = nome;
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome do tipo de exame não pode ser nulo ou vazio");
+        }
+        this.nome = nome.trim();
     }
 
     public String getDescricao() {
@@ -54,7 +57,10 @@ public class TipoExame {
     }
 
     public void setDescricao(String descricao) {
-        this.descricao = descricao;
+        if (descricao == null || descricao.trim().isEmpty()) {
+            throw new IllegalArgumentException("Descrição do tipo de exame não pode ser nula ou vazia");
+        }
+        this.descricao = descricao.trim();
     }
 
     public boolean isRequerJejum() {
@@ -70,6 +76,12 @@ public class TipoExame {
     }
 
     public void setPrazoResultado(int prazoResultado) {
+        if (prazoResultado <= 0) {
+            throw new IllegalArgumentException("Prazo para resultado deve ser maior que zero");
+        }
+        if (prazoResultado > 365) {
+            throw new IllegalArgumentException("Prazo para resultado não pode ser maior que 365 dias");
+        }
         this.prazoResultado = prazoResultado;
     }
 

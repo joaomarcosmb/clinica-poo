@@ -1,4 +1,6 @@
-package org.poo;
+package org.poo.entidades;
+
+import org.poo.excecoes.AgendaConflitanteException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -33,13 +35,21 @@ public class Agenda {
         return !horarios.containsKey(data) || horarios.get(data);
     }
 
-    public boolean reservarHorario(LocalDateTime data, Paciente paciente) {
+    public boolean reservarHorario(LocalDateTime data, Paciente paciente) throws AgendaConflitanteException {
         if (data == null || paciente == null) {
             return false;
         }
 
         if (!verificarDisponibilidade(data)) {
-            return false;
+            throw new AgendaConflitanteException("Horário " + data + " não está disponível para agendamento");
+        }
+
+        // Verifica se não há conflito com horários próximos (considerando consulta de 1 hora)
+        for (LocalDateTime horarioOcupado : horarios.keySet()) {
+            if (!horarios.get(horarioOcupado) &&
+                Math.abs(java.time.Duration.between(data, horarioOcupado).toMinutes()) < 60) {
+                throw new AgendaConflitanteException("Conflito de horário: existe consulta próxima em " + horarioOcupado);
+            }
         }
 
         // Marca o horário como ocupado

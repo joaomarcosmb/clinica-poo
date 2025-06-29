@@ -1,4 +1,7 @@
-package org.poo;
+package org.poo.entidades;
+
+import org.poo.excecoes.ProntuarioInvalidoException;
+import org.poo.interfaces.ItemHistorico;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -22,27 +25,36 @@ public class Prontuario {
         this.paciente = paciente;
     }
 
-    public void adicionarConsulta(Consulta consulta) {
+    public void adicionarConsulta(Consulta consulta) throws ProntuarioInvalidoException {
         if (consulta == null) {
-            throw new IllegalArgumentException("Consulta não pode ser nula");
+            throw new ProntuarioInvalidoException("Consulta não pode ser nula");
         }
 
         if (!consulta.getPaciente().equals(this.paciente)) {
-            throw new IllegalArgumentException("Consulta deve ser do mesmo paciente do prontuário");
+            throw new ProntuarioInvalidoException("Consulta deve ser do mesmo paciente do prontuário");
+        }
+
+        // Estabelece referência bidirecional
+        try {
+            consulta.setProntuario(this);
+        } catch (Exception e) {
+            throw new ProntuarioInvalidoException("Erro ao associar consulta ao prontuário: " + e.getMessage());
         }
 
         this.consultas.add(consulta);
     }
 
-    public void adicionarExame(Exame exame) {
+    public void adicionarExame(Exame exame) throws ProntuarioInvalidoException {
         if (exame == null) {
-            throw new IllegalArgumentException("Exame não pode ser nulo");
+            throw new ProntuarioInvalidoException("Exame não pode ser nulo");
         }
 
         if (!exame.getPaciente().equals(this.paciente)) {
-            throw new IllegalArgumentException("Exame deve ser do mesmo paciente do prontuário");
+            throw new ProntuarioInvalidoException("Exame deve ser do mesmo paciente do prontuário");
         }
 
+        // Estabelece referência bidirecional
+        exame.setProntuario(this);
         this.exames.add(exame);
     }
 
@@ -74,43 +86,6 @@ public class Prontuario {
     private boolean isDataNoPeriodo(LocalDate data, LocalDate dataInicio, LocalDate dataFim) {
         return (dataInicio == null || !data.isBefore(dataInicio)) &&
                 (dataFim == null || !data.isAfter(dataFim));
-    }
-
-    public String gerarRelatorio() {
-        StringBuilder relatorio = new StringBuilder();
-
-        relatorio.append("=== PRONTUÁRIO MÉDICO ===\n");
-        relatorio.append("Paciente: ").append(paciente.getNome()).append("\n");
-        relatorio.append("CPF: ").append(paciente.getCpf()).append("\n");
-        relatorio.append("Data de Criação: ").append(dataCriacao).append("\n\n");
-
-        relatorio.append("=== CONSULTAS ===\n");
-        if (consultas.isEmpty()) {
-            relatorio.append("Nenhuma consulta registrada.\n");
-        } else {
-            for (Consulta consulta : consultas) {
-                relatorio.append("Data: ").append(consulta.getDataHora()).append("\n");
-                relatorio.append("Médico: ").append(consulta.getMedico().getNome()).append("\n");
-                relatorio.append("Diagnóstico: ").append(consulta.getDiagnostico()).append("\n");
-                relatorio.append("Tratamento: ").append(consulta.getTratamento()).append("\n");
-                relatorio.append("Status: ").append(consulta.isRealizada() ? "Realizada" : "Agendada").append("\n\n");
-            }
-        }
-
-        relatorio.append("=== EXAMES ===\n");
-        if (exames.isEmpty()) {
-            relatorio.append("Nenhum exame registrado.\n");
-        } else {
-            for (Exame exame : exames) {
-                relatorio.append("Tipo: ").append(exame.getTipo().getNome()).append("\n");
-                relatorio.append("Data Realização: ").append(exame.getDataRealizacao()).append("\n");
-                relatorio.append("Resultado: ").append(exame.getResultado() != null ? exame.getResultado() : "Pendente")
-                        .append("\n");
-                relatorio.append("Status: ").append(exame.isRealizado() ? "Realizado" : "Agendado").append("\n\n");
-            }
-        }
-
-        return relatorio.toString();
     }
 
     public LocalDate getDataCriacao() {

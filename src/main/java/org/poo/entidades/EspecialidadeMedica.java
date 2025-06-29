@@ -1,4 +1,4 @@
-package org.poo;
+package org.poo.entidades;
 
 import java.util.ArrayList;
 import java.util.List;

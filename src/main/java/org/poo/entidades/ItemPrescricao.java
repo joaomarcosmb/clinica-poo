@@ -1,4 +1,4 @@
-package org.poo;
+package org.poo.entidades;
 
 import java.util.Objects;
 
@@ -23,6 +23,9 @@ public class ItemPrescricao {
     }
 
     public void setMedicamento(Medicamento medicamento) {
+        if (medicamento == null) {
+            throw new IllegalArgumentException("Medicamento não pode ser nulo");
+        }
         this.medicamento = medicamento;
     }
 
@@ -31,7 +34,10 @@ public class ItemPrescricao {
     }
 
     public void setPosologia(String posologia) {
-        this.posologia = posologia;
+        if (posologia == null || posologia.trim().isEmpty()) {
+            throw new IllegalArgumentException("Posologia não pode ser nula ou vazia");
+        }
+        this.posologia = posologia.trim();
     }
 
     public int getDuracaoTratamento() {
@@ -39,6 +45,12 @@ public class ItemPrescricao {
     }
 
     public void setDuracaoTratamento(int duracaoTratamento) {
+        if (duracaoTratamento <= 0) {
+            throw new IllegalArgumentException("Duração do tratamento deve ser maior que zero");
+        }
+        if (duracaoTratamento > 365) {
+            throw new IllegalArgumentException("Duração do tratamento não pode ser maior que 365 dias");
+        }
         this.duracaoTratamento = duracaoTratamento;
     }
 

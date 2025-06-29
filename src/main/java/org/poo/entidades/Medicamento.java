@@ -1,4 +1,4 @@
-package org.poo;
+package org.poo.entidades;
 
 import java.util.Objects;
 
@@ -34,7 +34,10 @@ public class Medicamento {
     }
 
     public void setNome(String nome) {
-        this.nome = nome;
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome do medicamento não pode ser nulo ou vazio");
+        }
+        this.nome = nome.trim();
     }
 
     public String getPrincipioAtivo() {
@@ -42,7 +45,10 @@ public class Medicamento {
     }
 
     public void setPrincipioAtivo(String principioAtivo) {
-        this.principioAtivo = principioAtivo;
+        if (principioAtivo == null || principioAtivo.trim().isEmpty()) {
+            throw new IllegalArgumentException("Princípio ativo não pode ser nulo ou vazio");
+        }
+        this.principioAtivo = principioAtivo.trim();
     }
 
     public String getConcentracao() {
@@ -50,7 +56,10 @@ public class Medicamento {
     }
 
     public void setConcentracao(String concentracao) {
-        this.concentracao = concentracao;
+        if (concentracao == null || concentracao.trim().isEmpty()) {
+            throw new IllegalArgumentException("Concentração não pode ser nula ou vazia");
+        }
+        this.concentracao = concentracao.trim();
     }
 
     public String getFormaFarmaceutica() {
@@ -58,7 +67,10 @@ public class Medicamento {
     }
 
     public void setFormaFarmaceutica(String formaFarmaceutica) {
-        this.formaFarmaceutica = formaFarmaceutica;
+        if (formaFarmaceutica == null || formaFarmaceutica.trim().isEmpty()) {
+            throw new IllegalArgumentException("Forma farmacêutica não pode ser nula ou vazia");
+        }
+        this.formaFarmaceutica = formaFarmaceutica.trim();
     }
 
     @Override
