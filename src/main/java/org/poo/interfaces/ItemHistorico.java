@@ -1,4 +1,4 @@
-package org.poo;
+package org.poo.interfaces;
 
 import java.time.LocalDate;
 
