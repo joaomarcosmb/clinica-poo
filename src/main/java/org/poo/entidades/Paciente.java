@@ -56,8 +56,32 @@ public class Paciente extends Pessoa {
     }
 
     public boolean cancelarAgendamento(Consulta consulta) {
-        // TODO: Implementar
-        return true;
+        if (consulta == null) {
+            return false;
+        }
+
+        // Verifica se a consulta pertence a este paciente
+        if (!this.equals(consulta.getPaciente())) {
+            return false;
+        }
+
+        // Se a consulta já foi realizada, não pode ser cancelada
+        if (consulta.isRealizada()) {
+            return false;
+        }
+
+        if (this.prontuario != null && this.prontuario.getConsultas().contains(consulta)) {
+            this.prontuario.getConsultas().remove(consulta);
+        }
+
+        boolean cancelada = consulta.cancelarConsulta();
+        
+        if (cancelada) {
+            System.out.println("Consulta cancelada para " + this.getNome() + " com Dr(a). " 
+                + consulta.getMedico().getNome());
+        }
+
+        return cancelada;
     }
 
     @Override
